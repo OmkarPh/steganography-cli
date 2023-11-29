@@ -9,6 +9,7 @@ from utils.utils import (
     decode,
     encode_images,
     decode_image,
+    generateDownloadableImageFromPilImage,
 )
 from io import BytesIO
 
@@ -153,7 +154,8 @@ elif nav_selection == "Encode Image":
                 st.image(encoded_image, caption="Encoded Image", use_column_width=True)
 
                 # Assuming `encoded_image` is a NumPy array
-                byte_im = generateDownloadableImage(encoded_image)
+                # byte_im = generateDownloadableImage(encoded_image)
+                byte_im = generateDownloadableImageFromPilImage(encoded_image)
 
                 # Use BytesIO to convert to bytes
                 byte_io = BytesIO(byte_im)
