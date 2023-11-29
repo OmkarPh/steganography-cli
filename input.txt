@@ -1,0 +1,13 @@
+python steganography.py merge --coverImage=res/s3/lake.jpg --secretImage=res/s3/mountain.jpg --output=res/s3/encoded.png
+python steganography.py unmerge --image=res/s3/encoded.png --output=res/s3/decoded.png --compare=res/s3/mountain.jpg
+
+python steganography.py merge --coverImage=res/s2/gateway.jpg --secretImage=res/s2/tajhotel.jpg --output=res/s2/encoded.png
+python steganography.py unmerge --image=res/s2/encoded.png --output=res/s2/decoded.png --compare=res/s2/tajhotel.jpg
+
+python steganography.py merge --coverImage=res/s1/cover.jpg --secretImage=res/s1/secret.jpg --output=res/s1/encoded.png
+python steganography.py unmerge --image=res/s1/encoded.png --output=res/s1/decoded.png --compare=res/s1/secret.jpg
+
+
+
+python steganography.py merge --coverImage=res/s/ --secretImage=res/s/ --output=res/s/encoded.png
+python steganography.py unmerge --image=res/s/encoded.png --output=res/s/decoded.png --compare=res/s/
