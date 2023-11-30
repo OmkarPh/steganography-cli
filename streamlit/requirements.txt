@@ -5,3 +5,4 @@ opencv-python==4.7.0.68
 Pillow==9.4.0
 gdown==4.6.0
 opencv-contrib-python==4.7.0.68
+cryptography

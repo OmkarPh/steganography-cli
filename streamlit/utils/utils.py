@@ -2,6 +2,8 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 
+stop_at = "ggspit"
+
 def generateDownloadableImage(img):
     img = Image.fromarray(img)
     buf = BytesIO()
@@ -116,7 +118,8 @@ def encode(uploaded: object, secret_data: str, key: str):
     img = Image.open(uploaded)
     img = np.array(img.convert('RGB'))
     # add stopping criteria using the defined key
-    secret_data += key
+    secret_data = encrypt_text(secret_data, key)
+    secret_data += stop_at
     data_index = 0
     # convert data to binary
     binary_secret_data = to_bin(secret_data)
@@ -165,7 +168,8 @@ def decode(encoded_img, key):
         if decoded_data[-len(key):] == key:
             break
     flag = 'Decode-Done'
-    return flag, decoded_data[:-len(key)]
+    decodedText = decrypt_text(decoded_data[:-len(key)], key)
+    return flag, decodedText
 
 BLACK_PIXEL = (0, 0, 0)
 
@@ -228,3 +232,60 @@ def decode_image(encoded_image):
 
     # decoded_image = Image.fromarray(decoded_np.astype('uint8'), 'RGB')
     # return decoded_image
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from base64 import b64encode, b64decode
+
+def derive_key(key_material):
+    # Derive a 256-bit key using HKDF
+    hkdf = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,  # AES-256 key size
+        salt=None,
+        info=b'encryption key',
+        backend=default_backend()
+    )
+    key = hkdf.derive(key_material.encode('utf-8'))
+    return key
+
+def pad_text(text):
+    block_size = algorithms.AES.block_size // 8
+    padding = block_size - (len(text) % block_size)
+    return text.encode('utf-8') + bytes([padding] * padding)
+
+def unpad_text(padded_text):
+    padding = padded_text[-1]
+    return padded_text[:-padding]
+
+def encrypt_text(text, key):
+    key = derive_key(key)
+    cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
+    encryptor = cipher.encryptor()
+    padded_text = pad_text(text)
+    ciphertext = encryptor.update(padded_text) + encryptor.finalize()
+    return b64encode(ciphertext).decode('utf-8')
+
+def decrypt_text(encrypted_text, key):
+    try:
+        key = derive_key(key)
+        cipher = Cipher(algorithms.AES(key), modes.ECB(), backend=default_backend())
+        decryptor = cipher.decryptor()
+        ciphertext = b64decode(encrypted_text)
+        decrypted_text = decryptor.update(ciphertext) + decryptor.finalize()
+        unpadded_text = unpad_text(decrypted_text)
+        return unpadded_text.decode('utf-8')
+    except:
+        return "Wrong Key :)"
+
+# text_to_encrypt = "Hello, World!"
+# encryption_key = "my_secret_key"
+
+# encrypted_text = encrypt_text(text_to_encrypt, encryption_key)
+# print("Encrypted Text:", encrypted_text)
+
+# decrypted_text = decrypt_text(encrypted_text, "my_secret_")
+# print("Decrypted Text:", len(decrypted_text))
+
