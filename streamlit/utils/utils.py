@@ -175,7 +175,7 @@ def encode_images(container_image, secret_image):
     secret_image = secret_image.resize(container_image.size)
 
     # if secretImage.size[0] > coverImage.size[0] or secretImage.size[1] > coverImage.size[1]:
-    #     raise ValueError('Image 2 should be smaller than Image 1!')
+    #     raise ValueError('Secret image should be smaller than cover!')
 
     map1 = coverImage.load()
     map2 = secretImage.load()
@@ -191,16 +191,15 @@ def encode_images(container_image, secret_image):
             new_map[i, j] = merge_rgb(rgb1, rgb2)
     return new_image
 
-    
-    container_np = np.array(container_image.convert('RGB'))
-    secret_np = np.array(secret_image.convert('RGB'))
+    # container_np = np.array(container_image.convert('RGB'))
+    # secret_np = np.array(secret_image.convert('RGB'))
 
-    for i in range(container_np.shape[0]):
-        for j in range(container_np.shape[1]):
-            for c in range(3):  # Iterate over RGB channels
-                container_np[i, j, c] = (container_np[i, j, c] & 0xFE) | (secret_np[i, j, c] >> 7)
+    # for i in range(container_np.shape[0]):
+    #     for j in range(container_np.shape[1]):
+    #         for c in range(3):  # Iterate over RGB channels
+    #             container_np[i, j, c] = (container_np[i, j, c] & 0xFE) | (secret_np[i, j, c] >> 7)
 
-    return container_np
+    # return container_np
 
 
 def decode_image(encoded_image):

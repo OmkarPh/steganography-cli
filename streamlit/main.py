@@ -54,7 +54,7 @@ if nav_selection == "Encode Text":
         st.session_state['mode'] = 'decode'
 
     with col1:
-        key = st.text_input('Your Key', 'cigar')
+        key = st.text_input('Your Key', 'spit')
     if st.session_state['mode'] == 'encode':
         with col2:
             secret_msg = st.text_input('Your Secret Message', 'my text')
